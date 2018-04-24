@@ -1,38 +1,37 @@
-command-line-chess
-==================
+Computer Science 470
+======================
+chessAi
+----------------------
 
 A python program to play chess against an AI in the terminal.
 
-##Installation
+## Task 1
+For this task, first I created a play_game.py file and copied main.py over to it. Then I edited the method startGame(board, playerSide, ai); I commented out a section and added 
+ ```python
+ if board.currentSide == playerSide:
+            # printPointAdvantage(board)
+            # move = None
+            # command = input("It's your move."
+            #                 " Type '?' for options. ? ")
+            # if command.lower() == 'u':
+            #     undoLastTwoMoves(board)
+            #     continue
+            # elif command.lower() == '?':
+            #     printCommandOptions()
+            #     continue
+            # elif command.lower() == 'l':
+            #     printAllLegalMoves(board, parser)
+            #     continue
+            # elif command.lower() == 'r':
+            #     move = getRandomMove(board, parser)
+            # elif command.lower() == 'exit' or command.lower() == 'quit':
+            #     return
+            try:
+                # Calling the the getRandomMove so the player input is random.
+                move = getRandomMove(board, parser)
+            except ValueError as error:
+                print("%s" % error)
+                continue
+            makeMove(move, board)
+```
 
-Requires Python 3, run the following to install :
-  
-    pip3 install cl-chess
-
-##Usage
-
-Run the following command after installation
-  
-    chess
-
-Type '?' to get help at any time during the game.
-
-You'll be asked to choose between playing as white or black, and what depth you want the AI to search :
-
-![Initial](http://i.imgur.com/PSS7csc.png)
-
-You can then make any (legal) move :
-
-![First move](http://i.imgur.com/AsXhhvC.png)
-
-##Options
-
-Instead of a move, you can input :
-
-* `l` to see every legal move
-* `r` to make a random move
-* `u` to undo your last move
-
-##Technical stuff
-
-The AI is a simple brute-force AI with no pruning. It evaluates a given position by counting the value of the pieces for each side (pawn -> 1, knight/bishop -> 3, rook -> 5, queen -> 9). It will evaluate the tree of moves, and take the path that results in the greatest gain. To learn more, check out [my post on how it works] (http://blog.mbuffett.com/creating-a-basic-chess-ai-using-python/).
