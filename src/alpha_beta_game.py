@@ -4,6 +4,9 @@ from AI import AI
 import sys
 import random
 
+import math as Math
+import pdb
+
 WHITE = True
 BLACK = False
 
@@ -52,6 +55,94 @@ def getRandomMove(board, parser):
     randomMove.notation = parser.notationForMove(randomMove)
     return randomMove
 
+def getAlphaBetaMove(board, parser):
+    import MoveNode as MoveNode
+    depth = 1
+    AIagent = AI(board, True, depth)
+    legalMoves = board.getAllMovesLegal(board.currentSide)
+    bestMove = None
+    moveTree = AIagent.generateMoveTree()
+    legalBestMoves = AIagent.bestMovesWithMoveTree(moveTree)
+
+    def alphaBetaMax(alpha, beta, depth):
+        global bestMove
+        value = -float(999999)
+        if (depth == 0):
+            return (board.getPointValueOfSide(board.currentSide),)
+        random.shuffle(moveTree)
+        for move in moveTree:
+            #for m in legalMoves:
+            if (move in legalBestMoves):
+                value = max(value, alphaBetaMin(alpha, beta, depth - 1)[0])
+                if (value >= beta):
+                    return beta, move.move
+                if (value > alpha):
+                    alpha = value
+                    bestMove = move.move
+                    bestMove.notation = parser.notationForMove(bestMove)
+        #return {'alpha': alpha, 'bestMove': bestMove}
+        return alpha, bestMove
+        #return bestMove
+    
+    def alphaBetaMin(alpha, beta, depth):
+        global bestMove
+        value = float(999999)
+        if (depth == 0):
+            return (-board.getPointValueOfSide(board.currentSide),)
+        
+        random.shuffle(moveTree)
+        for move in moveTree:
+            #for m in legalMoves:
+            if (move in legalBestMoves):
+                value = min(value, alphaBetaMax(alpha, beta, depth - 1)[0])
+                if (value <= alpha):
+                    return alpha, move.move
+                if (value < beta):
+                    beta = value
+                    bestMove = move.move
+                    bestMove.notation = parser.notationForMove(bestMove)
+        #return {'beta': beta, 'bestMove': bestMove}
+        return beta, bestMove
+        #return bestMove
+    
+    score, action = alphaBetaMax(-999999, 999999, 3)
+    return score, action
+
+# def alphaBetaMove(board, parser, alpha, beta, depth):
+#     import MoveNode as MoveNode
+
+#     AIagent = AI(board, True, depth)
+#     legalMoves = board.getAllMovesLegal(board.currentSide)
+#     bestMove = None
+#     moveTree = AIagent.generateMoveTree()
+
+#     if (depth == 0 or board.isCheckmate or board.isStalemate):
+#         return (board.getPointValueOfSide(board.currentSide),)
+
+#     if (board.currentSide == playerSide):
+#         bestValue = -999999
+#         for move in moveTree:
+#             for legalMove in legalMoves:
+#                 value = alphaBetaMove(board, parser, alpha, beta, depth - 1)
+#                 bestValue = max(bestValue, value)
+#                 alpha = max(alpha, bestValue)
+#                 if (beta <= alpha):
+#                     bestMove = legalMove
+#                     bestMove.notation = parser.notationForMove(bestMove)
+#                     break
+#         return bestValue, bestMove
+#     else:
+#         bestValue = 999999
+#         for move in moveTree:
+#             for legalMove in legalMoves:
+#                 value = alphaBetaMove(board, parser, alpha, beta, depth - 1)
+#                 bestValue = min(bestValue, value)
+#                 beta = min(beta, bestValue)
+#                 if (beta <= alpha):
+#                     bestMove = legalMove
+#                     bestMove.notation = parser.notationForMove(bestMove)
+#                     break
+#         return bestValue, bestMove
 
 def makeMove(move, board):
     print("Making move : " + move.notation)
@@ -90,25 +181,10 @@ def startGame(board, playerSide, ai):
             return
 
         if board.currentSide == playerSide:
-            # printPointAdvantage(board)
-            move = None
-            command = input("It's your move."
-                            " Type '?' for options. ? ")
-            if command.lower() == 'u':
-                undoLastTwoMoves(board)
-                continue
-            elif command.lower() == '?':
-                printCommandOptions()
-                continue
-            elif command.lower() == 'l':
-                printAllLegalMoves(board, parser)
-                continue
-            elif command.lower() == 'r':
-                move = getRandomMove(board, parser)
-            elif command.lower() == 'exit' or command.lower() == 'quit':
-                return
+            #printPointAdvantage(board)
             try:
-                move = parser.parse(command)
+                move = getAlphaBetaMove(board, parser)[1]
+                #move = alphaBetaMove(board, parser, -999999, 999999, 3)[1]
             except ValueError as error:
                 print("%s" % error)
                 continue
