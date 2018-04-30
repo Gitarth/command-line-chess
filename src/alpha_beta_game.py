@@ -63,22 +63,25 @@ def getAlphaBetaMove(board, parser):
     bestMove = None
     moveTree = AIagent.generateMoveTree()
     legalBestMoves = AIagent.bestMovesWithMoveTree(moveTree)
+    #conLegalMoves = AIagent.getAllMovesLegalConcurrent(board.currentSide)
 
     def alphaBetaMax(alpha, beta, depth):
         global bestMove
         value = -float(999999)
+        #if (depth == 0 or board.isCheckmate or board.isStalemate):
         if (depth == 0):
             return (board.getPointValueOfSide(board.currentSide),)
-        random.shuffle(moveTree)
-        for move in moveTree:
-            #for m in legalMoves:
-            if (move in legalBestMoves):
+        random.shuffle(legalBestMoves)
+        for move in legalBestMoves:
+            random.shuffle(legalMoves)
+            for m in legalMoves:
+                random.shuffle(legalMoves)
                 value = max(value, alphaBetaMin(alpha, beta, depth - 1)[0])
                 if (value >= beta):
-                    return beta, move.move
+                    return beta, m
                 if (value > alpha):
                     alpha = value
-                    bestMove = move.move
+                    bestMove = m
                     bestMove.notation = parser.notationForMove(bestMove)
         #return {'alpha': alpha, 'bestMove': bestMove}
         return alpha, bestMove
@@ -87,19 +90,21 @@ def getAlphaBetaMove(board, parser):
     def alphaBetaMin(alpha, beta, depth):
         global bestMove
         value = float(999999)
+        #if (depth == 0 or board.isCheckmate or board.isStalemate):
         if (depth == 0):
             return (-board.getPointValueOfSide(board.currentSide),)
         
-        random.shuffle(moveTree)
-        for move in moveTree:
-            #for m in legalMoves:
-            if (move in legalBestMoves):
+        random.shuffle(legalBestMoves)
+        for move in legalBestMoves:
+            random.shuffle(legalMoves)
+            for m in legalMoves:
+                random.shuffle(legalMoves)
                 value = min(value, alphaBetaMax(alpha, beta, depth - 1)[0])
                 if (value <= alpha):
-                    return alpha, move.move
+                    return alpha, m
                 if (value < beta):
                     beta = value
-                    bestMove = move.move
+                    bestMove = m
                     bestMove.notation = parser.notationForMove(bestMove)
         #return {'beta': beta, 'bestMove': bestMove}
         return beta, bestMove
