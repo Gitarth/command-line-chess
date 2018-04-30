@@ -21,6 +21,8 @@ For this task, first I created a play_game.py file and copied main.py over to it
 ## Task 2 
 **RUN ONLY AS WHITE**
 
+*sometimes there will be games where each side's king piece will play forever*
+
 For this task, I implemented an alpha-beta pruning algorithm. The algorithm accepts a couple of new parameters such as alpha, beta and depth. Using these parameters, it then does pruning to get rid of moves that are bad. First I made an instance of the AI.py class. Using this instance I generated a moveTree, and using the moveTree I got all the bestLegalMoves. The idea I am approaching here is that, the agent iterates all the possible moves in the legalBestMoves, and for each moves, it iterates over all the legalMoves. I then create two nested functions within it, `def alphaBetaMax(...)` and `def alphaBetaMin(...)`. Each of these functions take in an alpha, beta, and depth. Each function has a var value that is initialize. Then I check for the base case, being 
 ```python
 if (depth == 0 or board.isCheckmate or board.isStalemate):
